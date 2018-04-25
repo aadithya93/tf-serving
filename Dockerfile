@@ -4,11 +4,14 @@ LABEL maintainer="Adithya Seshadri <a.seshadri@samsung.com>"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 BAZELRC=/root/.bazelrc BAZEL_VERSION=0.5.4
 
-RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
+RUN apt-get update && apt-get install -y software-properties-common && \
+      add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+      apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
       build-essential \
       curl \
       libcurl3-dev \
       git \
+      libstdc++6 \
       libfreetype6-dev \
       libpng12-dev \
       libzmq3-dev \
@@ -53,10 +56,10 @@ RUN mkdir /bazel && \
     ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
     cd / && \
     rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
-    echo "deb [arch=amd64] http://storage.googleapis.com/tensorflow-serving-apt stable tensorflow-model-server tensorflow-model-server-universal" | tee /etc/apt/sources.list.d/tensorflow-serving.list && \
-    curl https://storage.googleapis.com/tensorflow-serving-apt/tensorflow-serving.release.pub.gpg | apt-key add - && \
-    apt-get update && apt-get install -y tensorflow-model-server && \
-    apt-get upgrade -y tensorflow-model-server && \
+    TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB" 'http://storage.googleapis.com/tensorflow-serving-apt/pool/tensorflow-model-server-1.5.0/t/tensorflow-model-server/tensorflow-model-server_1.5.0_all.deb' && \
+    dpkg -i "$TEMP_DEB" && \
+    rm -f "$TEMP_DEB" && \
     git clone --recurse-submodules https://github.com/tensorflow/serving
 
 
