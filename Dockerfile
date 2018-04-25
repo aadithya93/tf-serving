@@ -42,7 +42,7 @@ RUN pip --no-cache-dir install --upgrade pip \
         notebook \
         tensorflow-serving-api
 
-EXPOSE 8888
+EXPOSE 8888 9000
 WORKDIR /
 
 RUN mkdir /bazel && \
@@ -56,7 +56,8 @@ RUN mkdir /bazel && \
     echo "deb [arch=amd64] http://storage.googleapis.com/tensorflow-serving-apt stable tensorflow-model-server tensorflow-model-server-universal" | tee /etc/apt/sources.list.d/tensorflow-serving.list && \
     curl https://storage.googleapis.com/tensorflow-serving-apt/tensorflow-serving.release.pub.gpg | apt-key add - && \
     apt-get update && apt-get install -y tensorflow-model-server && \
-    apt-get upgrade -y tensorflow-model-server
+    apt-get upgrade -y tensorflow-model-server && \
+    git clone --recurse-submodules https://github.com/tensorflow/serving
 
 
 CMD ["/bin/bash"]
