@@ -2,9 +2,8 @@ FROM ubuntu:16.04
 
 LABEL maintainer="Adithya Seshadri <a.seshadri@samsung.com>"
 
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 BAZELRC=/root/.bazelrc BAZEL_VERSION=0.5.4
 
-#Install apt-get dependencies
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
       build-essential \
       curl \
@@ -15,9 +14,9 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
       libzmq3-dev \
       pkg-config \
       pkg-config \
-      python3-dev \
-      python3-pip \
-      python3-setuptools \
+      python-dev \
+      python-pip \
+      python-setuptools \
       unzip \
       software-properties-common \
       swig \
@@ -29,11 +28,9 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
       wget \
       && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/bin/python3 /usr/bin/python
+    rm -rf /var/lib/apt/lists/*
 
-#Install python3 packages
-RUN pip3 install --upgrade \
+RUN pip --no-cache-dir install --upgrade pip \
         mock \
         grpcio \
         virtualenv \
@@ -42,12 +39,12 @@ RUN pip3 install --upgrade \
         pandas \
         scipy \
         jupyter \
-        notebook
+        notebook \
+        tensorflow-serving-api
 
-# Set up Bazel.
-ENV BAZELRC=/root/.bazelrc BAZEL_VERSION=0.5.4
-
+EXPOSE 8888
 WORKDIR /
+
 RUN mkdir /bazel && \
     cd /bazel && \
     curl -fSsL -O https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
@@ -55,6 +52,7 @@ RUN mkdir /bazel && \
     chmod +x bazel-*.sh && \
     ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
     cd / && \
-    rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
+    rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
+    git clone --recurse-submodules https://github.com/tensorflow/serving
 
 CMD ["/bin/bash"]
