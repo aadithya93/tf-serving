@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y software-properties-common && \
       openjdk-8-jdk\
       openjdk-8-jre-headless \
       wget \
+      vim \
       && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -49,9 +50,6 @@ RUN pip --no-cache-dir install \
         tensorflow-serving-api-python3 \
         pyspark
 
-EXPOSE 8888 9000
-WORKDIR /
-
 RUN mkdir /bazel && \
     cd /bazel && \
     curl -fSsL -O https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
@@ -64,7 +62,11 @@ RUN mkdir /bazel && \
     wget -O "$TEMP_DEB" 'http://storage.googleapis.com/tensorflow-serving-apt/pool/tensorflow-model-server-1.5.0/t/tensorflow-model-server/tensorflow-model-server_1.5.0_all.deb' && \
     dpkg -i "$TEMP_DEB" && \
     rm -f "$TEMP_DEB" && \
-    git clone --recurse-submodules https://github.com/tensorflow/serving
+    git clone --recurse-submodules https://github.com/tensorflow/serving && \
+    mkdir /data
 
+EXPOSE 8888 9000
+WORKDIR /
+VOLUME /data
 
 CMD ["/bin/bash"]
