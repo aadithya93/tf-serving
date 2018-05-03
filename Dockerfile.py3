@@ -38,15 +38,16 @@ RUN apt-get update && apt-get install -y software-properties-common && \
 
 RUN pip --no-cache-dir install \
         mock \
-        grpcio==1.9.1 \
+        grpcio \
         virtualenv \
-        tensorflow==1.6.0 \
+        tensorflow\
         sklearn \
         pandas \
         scipy \
         jupyter \
         notebook \
-        tensorflow-serving-api-python3==1.6.0
+        tensorflow-serving-api-python3 \
+        pyspark
 
 EXPOSE 8888 9000
 WORKDIR /

@@ -43,7 +43,8 @@ RUN pip --no-cache-dir install --upgrade pip \
         scipy \
         jupyter \
         notebook \
-        tensorflow-serving-api
+        tensorflow-serving-api \
+        pyspark
 
 EXPOSE 8888 9000
 WORKDIR /
